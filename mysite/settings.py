@@ -129,3 +129,10 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
     "/var/www/static/",
 ]
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'nishant.nawarkhede@gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+from .local_settings import *
