@@ -32,33 +32,44 @@ def post_details(request, year, month, day, post):
         )
     except Post.DoesNotExist:
         return Http404
-    
+
     comments = post.comments.filter(active=True)
     form = CommentForm()
 
-    return render(request, "blog/post/detail.html", {"post": post, 'comments': comments, 'form': form})
+    return render(
+        request,
+        "blog/post/detail.html",
+        {"post": post, "comments": comments, "form": form},
+    )
+
 
 def post_share(request, post_id):
     post = Post.published_manager.get(id=post_id)
     sent = False
-    if request.method == 'POST':
+    if request.method == "POST":
         form = EmailForm(request.POST)
         if form.is_valid():
             cleaned_data = form.cleaned_data
-            post_url =  request.build_absolute_uri(post.get_absolute_url())
-            send_mail(f'{cleaned_data["name"]} recommends you read {post.title}', f'Read {post.title} at {post_url}', 'nishant.nawarkhede@gmail.com', [cleaned_data['to']], fail_silently=False)
+            post_url = request.build_absolute_uri(post.get_absolute_url())
+            send_mail(
+                f'{cleaned_data["name"]} recommends you read {post.title}',
+                f"Read {post.title} at {post_url}",
+                "nishant.nawarkhede@gmail.com",
+                [cleaned_data["to"]],
+                fail_silently=False,
+            )
             sent = True
             # send email logic
     else:
         form = EmailForm()
-    
-    return render(request, 'blog/post/share.html', {'form': form, 'post': post, 'sent': sent})
 
+    return render(
+        request, "blog/post/share.html", {"form": form, "post": post, "sent": sent}
+    )
 
 
 @require_POST
 def post_comment(request, post_id):
-
     try:
         post = Post.published_manager.get(id=post_id)
     except Post.DoesNotExist:
@@ -71,11 +82,6 @@ def post_comment(request, post_id):
         comment.save()
     return render(
         request,
-        'blog/post/comment.html',
-        {
-            'form': form,
-            'comment': comment,
-            'post': post
-            }
+        "blog/post/comment.html",
+        {"form": form, "comment": comment, "post": post},
     )
-
