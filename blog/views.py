@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from .models import Post
 from django.http import Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -9,11 +9,19 @@ from .forms import EmailForm, CommentForm
 
 from django.views.decorators.http import require_POST
 
+from taggit import models as taggit_models
+
 # Create your views here.
 
 
-def post_list(request):
+def post_list(request, tag_slug=None):
     posts = Post.published_manager.all()
+
+    tag = None
+    if tag_slug:
+        tag = get_object_or_404(taggit_models.Tag, slug=tag_slug)
+        posts = Post.published_manager.filter(tags__in=[tag])
+
     paginator = Paginator(posts, 2)
     page_number = request.GET.get("page", 1)
     try:
@@ -22,7 +30,7 @@ def post_list(request):
         posts = paginator.page(1)
     except EmptyPage:
         posts = paginator.page(paginator.num_pages)
-    return render(request, "blog/post/list.html", {"posts": posts})
+    return render(request, "blog/post/list.html", {"posts": posts, 'tag': tag})
 
 
 def post_details(request, year, month, day, post):
