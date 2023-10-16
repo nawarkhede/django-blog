@@ -30,7 +30,7 @@ def post_list(request, tag_slug=None):
         posts = paginator.page(1)
     except EmptyPage:
         posts = paginator.page(paginator.num_pages)
-    return render(request, "blog/post/list.html", {"posts": posts, 'tag': tag})
+    return render(request, "blog/post/list.html", {"posts": posts, "tag": tag})
 
 
 def post_details(request, year, month, day, post):
